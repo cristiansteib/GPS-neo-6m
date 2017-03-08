@@ -12,11 +12,10 @@
 
 	class Gpsneo : public SoftwareSerial
 	{
-		char  string[BUFFER_SIZE];
 		void init (int baudrate);
 		bool checksum(char * string);
-		bool readSerial();
-		char * getDataRaw(const __FlashStringHelper * look);
+		bool readSerial(char * buffer);
+		char * getDataRaw(const __FlashStringHelper * look,char * buffer);
 
 
 

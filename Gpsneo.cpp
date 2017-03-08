@@ -64,10 +64,12 @@ Gpsneo::~Gpsneo(void){
 
 void Gpsneo::init(int baudrate){
 	this->begin(baudrate);
+	/*
 	for (int i = 0; i < BUFFER_SIZE ; ++i)
 	{
 		string[i]='\0';
 	}
+	*/
 }
 
 
@@ -111,7 +113,9 @@ bool Gpsneo::checksum(char * string){
 	}
 }
 
-bool Gpsneo::readSerial(){	
+
+bool Gpsneo::readSerial(char * buffer){	
+
 	int max_lenght=BUFFER_2-1; // limit the size for reading.
 	int length=0;
 	long unsigned int timeout;
@@ -123,16 +127,16 @@ bool Gpsneo::readSerial(){
 	timeout = millis()+600; // 600ms for read data from serial port. 
 	while (  millis()<timeout && length<max_lenght){
 		if (this->available()){
-		string[length]=char(this->read());	
+		buffer[length]=char(this->read());	
 		length++;
 		}
 	}
-	string[BUFFER_2 -1]='\0';
+	buffer[BUFFER_2 -1]='\0';
 	return true;
 }
 
 
-char *  Gpsneo::getDataRaw(const __FlashStringHelper * look){
+char *  Gpsneo::getDataRaw(const __FlashStringHelper * look,char * buffer){
 	/*parameter look can be = 
    GPBOD - Bearing, origin to destination
    GPBWC - Bearing and distance to waypoint, great circle
@@ -154,45 +158,58 @@ char *  Gpsneo::getDataRaw(const __FlashStringHelper * look){
    GPXTE - Cross-track error, Measured
    GPZDA - Date & Time
 	*/
+
 	int end=-1;
 	int start=-1;
 	bool fail=true;
 	uint8_t attemps=0;
 	bool error;
 	while (fail==true && attemps<2){
-		if (readSerial()==false){
+		if (readSerial(buffer)==false){
 			break;
 		}
 		attemps++;
-		start=indexOf(string,look);
+		start=indexOf(buffer,look);
 		if (start>-1){
-			end=indexOf(string,"\n",start+1);
+			end=indexOf(buffer,"\n",start+1);
 			if (end>0){
-		 		substring(&string[BUFFER_2],&string[BUFFER_1],start,end);
-		 		return &string[BUFFER_2];
+		 		substring(&buffer[BUFFER_2],&buffer[BUFFER_1],start,end);
+		 		return &buffer[BUFFER_2];
 		 	}else{fail=true;}
 		}else{fail=true;}
 	}
+	return NULL;
 
 }
 
 
 void Gpsneo::getDataGPRMC(){
+	char buffer[BUFFER_SIZE];
 	char * string;
-	string=getDataRaw(F("GPRMC"));
+
+	string=getDataRaw(F("GPRMC"),buffer);
+	
+
 	if (checksum(string)){
-		Serial.print(F("checksum OK---> "));
+		Serial.println(F("checksum OK---> "));
+	//	Serial.println(string);
 	}
-	Serial.println(string);
-	//free (string);
+
+
+	return;
+
 }
 
 void Gpsneo::getDataGPGSA(){
+	char buffer[BUFFER_SIZE];
 	char * string;
-	string=getDataRaw(F("GPGSA"));
+
+	string=getDataRaw(F("GPGSA"),buffer);
+
 	if (checksum(string)){
-		Serial.print(F("checksum OK---> "));
+		Serial.println(F("checksum OK---> "));
+	//	Serial.println(string);
 	}
-	Serial.println(string);
-	//free (string);
+
+	return;
 }
