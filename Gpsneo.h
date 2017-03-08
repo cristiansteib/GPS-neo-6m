@@ -14,13 +14,16 @@
 	{
 		char  string[BUFFER_SIZE];
 		void init (int baudrate);
-		
+		bool checksum(char * string);
+		bool readSerial();
+		char * getDataRaw(const __FlashStringHelper * look);
+
+
+
 	public:
 		Gpsneo(void);
 		~Gpsneo(void);
-
-		void readSerial();
-		void getData();
-
+		void getDataGPRMC();
+		void getDataGPGSA();
 	};
 #endif 
