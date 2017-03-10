@@ -22,7 +22,7 @@
 	public:
 		Gpsneo(void);
 		~Gpsneo(void);
-		void getDataGPRMC();
+		void getDataGPRMC(char *time,char * status,char * latitude,char *latitudeMeridian, char * logitude, char * logitudeMeridian,char * speedKnots);
 		void getDataGPGSA();
 	};
 #endif 

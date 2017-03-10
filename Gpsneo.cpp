@@ -31,8 +31,10 @@ int indexOf(char * string,const __FlashStringHelper * search){
 
 int  indexOf(char * string,char * search,int offset){
 
-	if (strlen(search) > offset)
-		return -1; //if the offset is greater than the string length,return -1 
+	//Serial.println("IndexOf offset->");
+
+	//if (strlen(search) > offset)
+	//	return -1; //if the offset is greater than the string length,return -1 
 	
 	int ind = int (strstr(&string[offset],search));
 	int pos = int  (ind - int(string));
@@ -52,9 +54,30 @@ int  indexOf(char * string,char * search){
 
 //-----------------------------------
 
+//------------------------Split String
 
-Gpsneo::Gpsneo(void) : SoftwareSerial(RX_PIN_DEFAULT,TX_PIN_DEFAULT){  
-  init(BAUDRATE_DEFAULT);
+void split(char * string,char * separator,unsigned int position,char *dest){
+	int last;
+	int end=0;
+	for (int i = 0; i <= position; ++i)
+	{
+		last=end;
+		end=indexOf(string,separator,last+1);		
+	}
+	int offset=end-last;
+	//char dest[offset];
+	strncpy(dest,((string)+last+1),offset-1);
+	dest[offset]='\0';
+	return ;
+
+}
+//------------------------------------------
+
+
+
+Gpsneo::Gpsneo(void) : SoftwareSerial(RX_PIN_DEFAULT,TX_PIN_DEFAULT)
+{  
+	init(BAUDRATE_DEFAULT);
 }
 
 Gpsneo::~Gpsneo(void){
@@ -183,26 +206,40 @@ char *  Gpsneo::getDataRaw(const __FlashStringHelper * look,char * buffer){
 }
 
 
-void Gpsneo::getDataGPRMC(){
+void Gpsneo::getDataGPRMC(char *time,char * status,char * latitude,char *latitudeMeridian, char * logitude, char * logitudeMeridian,char * speedKnots){
 	char buffer[BUFFER_SIZE];
 	char * string;
+	string = &buffer[BUFFER_2];
 
-	string=getDataRaw(F("GPRMC"),buffer);
+
+
+	string=getDataRaw(F("GPRMC"),buffer);	
 	
+	if (string!=NULL){
+		if (checksum(string)){
+			//Serial.println(F("checksum OK---> "));
+			Serial.println(string);
+			split(string,",",1,time);
+			split(string,",",2,status);
+			split(string,",",3,latitude);
+			split(string,",",4,latitudeMeridian);
+			split(string,",",5,logitude);
+			split(string,",",6,logitudeMeridian);
+			split(string,",",7,speedKnots);
 
-	if (checksum(string)){
-		Serial.println(F("checksum OK---> "));
-	//	Serial.println(string);
+		//	Serial.println(string);
+		}
 	}
-
 
 	return;
 
 }
 
+
 void Gpsneo::getDataGPGSA(){
 	char buffer[BUFFER_SIZE];
 	char * string;
+	string = &buffer[BUFFER_2];
 
 	string=getDataRaw(F("GPGSA"),buffer);
 
