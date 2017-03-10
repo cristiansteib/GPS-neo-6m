@@ -206,7 +206,7 @@ char *  Gpsneo::getDataRaw(const __FlashStringHelper * look,char * buffer){
 }
 
 
-void Gpsneo::getDataGPRMC(char *time,char * status,char * latitude,char *latitudeMeridian, char * logitude, char * logitudeMeridian,char * speedKnots){
+void Gpsneo::getDataGPRMC(char *time,char * status,char * latitude,char *latitudeMeridian, char * longitude, char * longitudeMeridian,char * speedKnots){
 	char buffer[BUFFER_SIZE];
 	char * string;
 	string = &buffer[BUFFER_2];
@@ -217,18 +217,20 @@ void Gpsneo::getDataGPRMC(char *time,char * status,char * latitude,char *latitud
 	
 	if (string!=NULL){
 		if (checksum(string)){
-			//Serial.println(F("checksum OK---> "));
-			Serial.println(string);
 			split(string,",",1,time);
 			split(string,",",2,status);
 			split(string,",",3,latitude);
 			split(string,",",4,latitudeMeridian);
-			split(string,",",5,logitude);
-			split(string,",",6,logitudeMeridian);
+			split(string,",",5,longitude);
+			split(string,",",6,longitudeMeridian);
 			split(string,",",7,speedKnots);
-
-		//	Serial.println(string);
 		}
+	}else{
+		//string es null, entonces el contenido de los punteros tiene que ser NULL
+		time[0]=NULL;status[0]=NULL;
+		latitude[0]=NULL;latitudeMeridian[0]=NULL;
+		longitude[0]=NULL;longitudeMeridian[0]=NULL;
+		speedKnots[0]=NULL;
 	}
 
 	return;
