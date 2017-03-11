@@ -80,6 +80,8 @@ Gpsneo::Gpsneo(void) : SoftwareSerial(RX_PIN_DEFAULT,TX_PIN_DEFAULT)
 	init(BAUDRATE_DEFAULT);
 }
 
+
+
 Gpsneo::~Gpsneo(void){
 	Serial.println("destructor");
 
@@ -206,7 +208,17 @@ char *  Gpsneo::getDataRaw(const __FlashStringHelper * look,char * buffer){
 }
 
 
-void Gpsneo::getDataGPRMC(char *time,char * status,char * latitude,char *latitudeMeridian, char * longitude, char * longitudeMeridian,char * speedKnots){
+void Gpsneo::getDataGPRMC(char * latitude, char * latitudHemisphere ,char * longitude,char * longitudeMeridian){
+	char x[2];
+	x[0]='z';
+	x[1]='\0';
+	getDataGPRMC(&x[0],&x[0],latitude,latitudHemisphere,longitude,longitudeMeridian,&x[0],&x[0],&x[0],&x[0],&x[0]);
+	return;
+	
+
+}
+
+void Gpsneo::getDataGPRMC(char *time,char * status,char * latitude,char *latitudHemisphere, char * longitude, char * longitudeMeridian,char * speedKnots,char * trackAngle,char * date,char * magneticVaration,char * magneticVarationOrientation){
 	char buffer[BUFFER_SIZE];
 	char * string;
 	string = &buffer[BUFFER_2];
@@ -217,18 +229,34 @@ void Gpsneo::getDataGPRMC(char *time,char * status,char * latitude,char *latitud
 	
 	if (string!=NULL){
 		if (checksum(string)){
-			split(string,",",1,time);
-			split(string,",",2,status);
-			split(string,",",3,latitude);
-			split(string,",",4,latitudeMeridian);
-			split(string,",",5,longitude);
-			split(string,",",6,longitudeMeridian);
-			split(string,",",7,speedKnots);
+			if (time[0]!='z')
+				split(string,",",1,time);
+			if (status[0]!='z')
+				split(string,",",2,status);
+			if (latitude[0]!='z')
+				split(string,",",3,latitude);
+			if (latitudHemisphere[0]!='z')
+				split(string,",",4,latitudHemisphere);
+			if (longitude[0]!='z')
+				split(string,",",5,longitude);
+			if (longitudeMeridian[0]!='z')
+				split(string,",",6,longitudeMeridian);
+			if (speedKnots[0]!='z')
+				split(string,",",7,speedKnots);
+			if (trackAngle[0]!='z')
+				split(string,",",8,trackAngle);
+			if (date[0]!='z')
+				split(string,",",9,date);
+			if (magneticVaration[0]!='z')
+				split(string,",",10,magneticVaration);
+			if (magneticVarationOrientation[0]!='z')
+				split(string,",",11,magneticVarationOrientation);
+
 		}
 	}else{
 		//string es null, entonces el contenido de los punteros tiene que ser NULL
 		time[0]=NULL;status[0]=NULL;
-		latitude[0]=NULL;latitudeMeridian[0]=NULL;
+		latitude[0]=NULL;latitudHemisphere[0]=NULL;
 		longitude[0]=NULL;longitudeMeridian[0]=NULL;
 		speedKnots[0]=NULL;
 	}

@@ -22,7 +22,8 @@
 	public:
 		Gpsneo(void);
 		~Gpsneo(void);
-		void getDataGPRMC(char *time,char * status,char * latitude,char *latitudeMeridian, char * logitude, char * logitudeMeridian,char * speedKnots);
+		void getDataGPRMC(char *time,char * status,char * latitude,char *latitudHemisphere, char * longitude, char * longitudeMeridian,char * speedKnots,char * trackAngle,char * date,char * magneticVaration, char * magneticVarationOrientation);
+		void getDataGPRMC(char * latitude, char * latitudHemisphere ,char * longitude,char * longitudeMeridian);
 		void getDataGPGSA();
 	};
 #endif 
