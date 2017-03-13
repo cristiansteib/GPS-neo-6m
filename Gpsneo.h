@@ -1,6 +1,8 @@
 #ifndef Gpsneo_h
 	#define Gpsneo_h
 	#include <SoftwareSerial.h>
+	//  UNCOMMENT WHAT YOU ARE GOING TO USE
+	//#define GPGSA
 
 	#define RX_PIN_DEFAULT 10
 	#define TX_PIN_DEFAULT 11
@@ -8,7 +10,7 @@
 	#define BUFFER_SIZE 600
 	#define BUFFER_1 0
 	#define BUFFER_2 500
-
+	//#define DEBUG
 
 	class Gpsneo : public SoftwareSerial
 	{

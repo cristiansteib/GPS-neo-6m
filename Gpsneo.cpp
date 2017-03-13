@@ -232,14 +232,17 @@ void Gpsneo::getDataGPRMC(char * latitude, char * latitudHemisphere ,char * long
 }
 
 void Gpsneo::getDataGPRMC(char *time,char * status,char * latitude,char *latitudHemisphere, char * longitude, char * longitudeMeridian,char * speedKnots,char * trackAngle,char * date,char * magneticVaration,char * magneticVarationOrientation){
+	#ifdef DEBUG
+		Serial.println(F("getDataGPRMC"));
+	#endif
 	char buffer[BUFFER_SIZE];
 	char * string;
 	string = &buffer[BUFFER_2];
 
-
-
 	string=getDataRaw(F("GPRMC"),buffer);	
-	
+	#ifdef DEBUG
+		Serial.println(string);
+	#endif
 	if (string!=NULL){
 		if (checksum(string)){
 			if (time[0]!='z')
@@ -250,17 +253,12 @@ void Gpsneo::getDataGPRMC(char *time,char * status,char * latitude,char *latitud
 				split(string,",",3,latitude);
 			if (latitudHemisphere[0]!='z')
 				split(string,",",4,latitudHemisphere);
-
 			if (longitude[0]!='z')
 				split(string,",",5,longitude);
-
 			if (longitudeMeridian[0]!='z')
 				split(string,",",6,longitudeMeridian);
-
-
 			if (speedKnots[0]!='z')
 				split(string,",",7,speedKnots);
-
 			if (trackAngle[0]!='z')
 				split(string,",",8,trackAngle);
 			if (date[0]!='z')
@@ -277,7 +275,9 @@ void Gpsneo::getDataGPRMC(char *time,char * status,char * latitude,char *latitud
 		longitude[0]=NULL;longitudeMeridian[0]=NULL;
 		speedKnots[0]=NULL;
 	}
-	free(string);free(&buffer);
+	#ifdef DEBUG
+		Serial.println(F("EndgetDataGPRMC"));
+	#endif
 	return;
 
 }
@@ -288,7 +288,9 @@ void Gpsneo::convertLatitude(char * latitude,char * returnValue){
 	 El formato de la latitud es de ddmm.mmmm
 	 hay que convertirlo en dd.dddd
 	*/
-
+	#ifdef DEBUG
+		Serial.println(F("convLat"));
+	#endif
 	int dot = indexOf(latitude,F("."));	//busco la posicion del punto
 	if (dot!=-1){
 		char div[10]="";
@@ -299,18 +301,26 @@ void Gpsneo::convertLatitude(char * latitude,char * returnValue){
 		float  dd=atof(div);
 		dd=dd+mm;	
 		dtostrf(dd, 3, 7, returnValue);
+	#ifdef DEBUG
+		Serial.println(F("EndconvLat"));
+	#endif
 		return;
 	}
+	#ifdef DEBUG
+		Serial.println(F("EndconvLat"));
+	#endif
 	strcpy(returnValue,"-1");
 	return;
 }
 
 void Gpsneo::convertLongitude(char * longitude,char * returnValue){
 	/*
-	 El formato de la latitud es de ddmm.mmmm
+	 El formato de la latitud es de dddmm.mmmm
 	 hay que convertirlo en dd.dddd
 	*/
-
+	#ifdef DEBUG
+		Serial.println(F("convLon"));
+	#endif
 	int dot = indexOf(longitude,F("."));	//busco la posicion del punto
 	if (dot!=-1){
 		char div[10]="";
@@ -321,9 +331,15 @@ void Gpsneo::convertLongitude(char * longitude,char * returnValue){
 		float  dd=atof(div);
 		dd=dd+mm;	
 		dtostrf(dd, 3, 7, returnValue);
+	#ifdef DEBUG
+		Serial.println(F("EndconvLon"));
+	#endif
 		return;
 	}
 	strcpy(returnValue,"-1");
+	#ifdef DEBUG
+		Serial.println(F("EndconvLon"));
+	#endif
 	return;
 }
 
@@ -333,39 +349,43 @@ void Gpsneo::Google(char *link){
 
 		http://www.google.com/maps/place/Latitud,Longitud
 	*/
-	char lat[15]="";
+	#ifdef DEBUG
+		Serial.println(F("Google"));
+	#endif
+	char lat[17]="";
 	char latH[3]="";
-	char lon[15]="";
+	char lon[17]="";
 	char lonM[3]="";
-	//char linkRestult[60];//="http://www.google.com/maps/place/";
 	strcpy_P(link, (char*)pgm_read_word(&(string_table[0])));
-	getDataGPRMC(lat,latH,lon,lonM);	
+	getDataGPRMC(lat,latH,lon,lonM);
 	convertLatitude(lat,lat);
 	convertLongitude(lon,lon);
 	if (latH[0]=='S')
 		strcat(link,"-");
 	strcat(link,lat);
 	strcat(link,",");
-	
 	if (lonM[0]=='W')
 		strcat(link,"-");
 	strcat(link,lon);
-	//strncpy(link,link,strlen(link));
-	free(&lat);free(&latH);free(lon);free(lonM);
+	#ifdef DEBUG
+		Serial.println(F("EndGoogle"));
+	#endif
 	return;
 }
 
 void Gpsneo::getDataGPGSA(){
-	char buffer[BUFFER_SIZE];
-	char * string;
-	string = &buffer[BUFFER_2];
+	//TODO
+	#ifdef GPGSA
+		char buffer[BUFFER_SIZE];
+		char * string;
+		string = &buffer[BUFFER_2];
 
-	string=getDataRaw(F("GPGSA"),buffer);
+		string=getDataRaw(F("GPGSA"),buffer);
 
-	if (checksum(string)){
-		Serial.println(F("checksum OK---> "));
-	//	Serial.println(string);
-	}
-
+		if (checksum(string)){
+			Serial.println(F("checksum OK---> "));
+		//	Serial.println(string);
+		}
+	#endif
 	return;
 }
