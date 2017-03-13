@@ -21,9 +21,14 @@
 
 	public:
 		Gpsneo(void);
+		Gpsneo(uint8_t rx,uint8_t tx);
+		Gpsneo(uint8_t rx,uint8_t tx, long baudrate);
 		~Gpsneo(void);
 		void getDataGPRMC(char *time,char * status,char * latitude,char *latitudHemisphere, char * longitude, char * longitudeMeridian,char * speedKnots,char * trackAngle,char * date,char * magneticVaration, char * magneticVarationOrientation);
 		void getDataGPRMC(char * latitude, char * latitudHemisphere ,char * longitude,char * longitudeMeridian);
+		void convertLongitude(char * longitude,char * returnValue); //convierte los datos de lectura que vienen por defecto , a grados. 
+		void convertLatitude(char * longitude,char * returnValue);
+		void Google(char *link);
 		void getDataGPGSA();
 	};
 #endif 

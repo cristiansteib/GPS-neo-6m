@@ -4,6 +4,9 @@
 #include <avr/pgmspace.h> 
 
 
+const char string_0[] PROGMEM = "http://www.google.com/maps/place/";
+const char* const string_table[] PROGMEM = {string_0};
+
 // --------------------SUBSTRING 
 
 void substring(char * dest,char *string,int start,int end){
@@ -74,14 +77,23 @@ void split(char * string,char * separator,unsigned int position,char *dest){
 //------------------------------------------
 
 
+//--------------------------------------------Constructors
 
 Gpsneo::Gpsneo(void) : SoftwareSerial(RX_PIN_DEFAULT,TX_PIN_DEFAULT)
 {  
 	init(BAUDRATE_DEFAULT);
 }
 
+Gpsneo::Gpsneo(uint8_t rx, uint8_t tx) : SoftwareSerial(rx,tx)
+{  
+	init(BAUDRATE_DEFAULT);
+}
 
-
+Gpsneo::Gpsneo(uint8_t rx, uint8_t tx,long baudrate) : SoftwareSerial(rx,tx)
+{  
+	init(baudrate);
+}
+//---------------------------------------------------------------
 Gpsneo::~Gpsneo(void){
 	Serial.println("destructor");
 
@@ -156,7 +168,8 @@ bool Gpsneo::readSerial(char * buffer){
 		length++;
 		}
 	}
-	buffer[BUFFER_2 -1]='\0';
+	buffer[length-1]='\0';
+	//buffer[BUFFER_2 -1]='\0';
 	return true;
 }
 
@@ -203,6 +216,7 @@ char *  Gpsneo::getDataRaw(const __FlashStringHelper * look,char * buffer){
 		 	}else{fail=true;}
 		}else{fail=true;}
 	}
+
 	return NULL;
 
 }
@@ -215,7 +229,6 @@ void Gpsneo::getDataGPRMC(char * latitude, char * latitudHemisphere ,char * long
 	getDataGPRMC(&x[0],&x[0],latitude,latitudHemisphere,longitude,longitudeMeridian,&x[0],&x[0],&x[0],&x[0],&x[0]);
 	return;
 	
-
 }
 
 void Gpsneo::getDataGPRMC(char *time,char * status,char * latitude,char *latitudHemisphere, char * longitude, char * longitudeMeridian,char * speedKnots,char * trackAngle,char * date,char * magneticVaration,char * magneticVarationOrientation){
@@ -237,12 +250,17 @@ void Gpsneo::getDataGPRMC(char *time,char * status,char * latitude,char *latitud
 				split(string,",",3,latitude);
 			if (latitudHemisphere[0]!='z')
 				split(string,",",4,latitudHemisphere);
+
 			if (longitude[0]!='z')
 				split(string,",",5,longitude);
+
 			if (longitudeMeridian[0]!='z')
 				split(string,",",6,longitudeMeridian);
+
+
 			if (speedKnots[0]!='z')
 				split(string,",",7,speedKnots);
+
 			if (trackAngle[0]!='z')
 				split(string,",",8,trackAngle);
 			if (date[0]!='z')
@@ -251,7 +269,6 @@ void Gpsneo::getDataGPRMC(char *time,char * status,char * latitude,char *latitud
 				split(string,",",10,magneticVaration);
 			if (magneticVarationOrientation[0]!='z')
 				split(string,",",11,magneticVarationOrientation);
-
 		}
 	}else{
 		//string es null, entonces el contenido de los punteros tiene que ser NULL
@@ -260,11 +277,83 @@ void Gpsneo::getDataGPRMC(char *time,char * status,char * latitude,char *latitud
 		longitude[0]=NULL;longitudeMeridian[0]=NULL;
 		speedKnots[0]=NULL;
 	}
-
+	free(string);free(&buffer);
 	return;
 
 }
 
+
+void Gpsneo::convertLatitude(char * latitude,char * returnValue){
+	/*
+	 El formato de la latitud es de ddmm.mmmm
+	 hay que convertirlo en dd.dddd
+	*/
+
+	int dot = indexOf(latitude,F("."));	//busco la posicion del punto
+	if (dot!=-1){
+		char div[10]="";
+		substring(div,latitude,dot-2,strlen(latitude));	
+		float  mm=atof(div);
+  		mm = mm/60;
+		substring(div,latitude,dot-4,2);
+		float  dd=atof(div);
+		dd=dd+mm;	
+		dtostrf(dd, 3, 7, returnValue);
+		return;
+	}
+	strcpy(returnValue,"-1");
+	return;
+}
+
+void Gpsneo::convertLongitude(char * longitude,char * returnValue){
+	/*
+	 El formato de la latitud es de ddmm.mmmm
+	 hay que convertirlo en dd.dddd
+	*/
+
+	int dot = indexOf(longitude,F("."));	//busco la posicion del punto
+	if (dot!=-1){
+		char div[10]="";
+		substring(div,longitude,dot-2,strlen(longitude));	
+		float  mm=atof(div);
+  		mm = mm/60;
+		substring(div,longitude,dot-5,3);
+		float  dd=atof(div);
+		dd=dd+mm;	
+		dtostrf(dd, 3, 7, returnValue);
+		return;
+	}
+	strcpy(returnValue,"-1");
+	return;
+}
+
+void Gpsneo::Google(char *link){
+	/*
+		Return a link of google Maps. 
+
+		http://www.google.com/maps/place/Latitud,Longitud
+	*/
+	char lat[15]="";
+	char latH[3]="";
+	char lon[15]="";
+	char lonM[3]="";
+	//char linkRestult[60];//="http://www.google.com/maps/place/";
+	strcpy_P(link, (char*)pgm_read_word(&(string_table[0])));
+	getDataGPRMC(lat,latH,lon,lonM);	
+	convertLatitude(lat,lat);
+	convertLongitude(lon,lon);
+	if (latH[0]=='S')
+		strcat(link,"-");
+	strcat(link,lat);
+	strcat(link,",");
+	
+	if (lonM[0]=='W')
+		strcat(link,"-");
+	strcat(link,lon);
+	//strncpy(link,link,strlen(link));
+	free(&lat);free(&latH);free(lon);free(lonM);
+	return;
+}
 
 void Gpsneo::getDataGPGSA(){
 	char buffer[BUFFER_SIZE];
