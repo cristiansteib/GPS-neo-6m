@@ -16,9 +16,10 @@ Using Software Serial library.
 
 ## Capabilities of the library
 #### Constructors
-they can call the class wih differents parameters as necessary.
-|Constructors|Notes|
-|------------|-----|
+
+
+| Constructors | Notes |
+|------------------------------------------------|-----|
 |Gpsneo()| The class initialize with the default values|
 |Gpsneo ( rx ,tx )| Parameters of the Software Serial Port|
 |Gpsneo ( rx, tx, baudrate)|Parameters of the Software Serial Port|
