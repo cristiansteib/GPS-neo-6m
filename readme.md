@@ -18,10 +18,11 @@ Using Software Serial library.
 #### Constructors
 they can call the class wih differents parameters as necessary.
 |Constructors|Notes|
-|-----------|-----|
+|------------|-----|
 |Gpsneo()| The class initialize with the default values|
 |Gpsneo ( rx ,tx )| Parameters of the Software Serial Port|
 |Gpsneo ( rx, tx, baudrate)|Parameters of the Software Serial Port|
+
 Example of constructors: 
 ```c++
 Gpsneo gps(); //default parameters
