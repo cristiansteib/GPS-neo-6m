@@ -42,11 +42,11 @@ Gpsneo gps(10,11,9600); //set rx,tx and baudrate
 ###### Get data with GPRMC sentence:
 + Return all data of the sentence:
 
-..*  **getDataGPRMC** (char *time,char * status,char * latitude,char *latitudHemisphere, char * longitude, char * longitudeMeridian,char * speedKnots,char * trackAngle,char * date,char * magneticVaration, char * magneticVarationOrientation);
+   **getDataGPRMC** (char *time,char * status,char * latitude,char *latitudHemisphere, char * longitude, char * longitudeMeridian,char * speedKnots,char * trackAngle,char * date,char * magneticVaration, char * magneticVarationOrientation)
 
 + if you don't want all the data, you can use at this way:
 
-..* **getDataGPRMC** (char * latitude, char * latitudHemisphere ,char * longitude,char * longitudeMeridian);
-
+    **getDataGPRMC** (char * latitude, char * latitudHemisphere ,char * longitude,char * longitudeMeridian)
+    
 + This methods check the checksum, if the checksum fail, or it can't read the sentence return Null values for all the parameters.
 
