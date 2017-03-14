@@ -50,3 +50,20 @@ Gpsneo gps(10,11,9600); //set rx,tx and baudrate
     
 + This methods check the checksum, if the checksum fail, or it can't read the sentence return Null values for all the parameters.
 
+#### Google function:
+This function solve everything to get a link for google maps with the coords.
+Example:
+```c++
+char link[50];
+gps.Google(char * link);
+Serial.println(link);
+```
+The output will be: 
+```
+http://www.google.com/maps/place/-34.9139980,-57.9376300
+http://www.google.com/maps/place/-34.9140240,-57.9375800
+```
+Or if can't read a Lat. and Long the output will be
+```
+http://www.google.com/maps/place/-1,-1
+```
