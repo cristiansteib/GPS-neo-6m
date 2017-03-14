@@ -17,6 +17,7 @@ Using Software Serial library.
 ## Capabilities of the library
 #### Constructors
 
+They can call the class wih differents parameters as necessary.
 
 | Constructors | Notes |
 |------------------------------------------------|-----|
