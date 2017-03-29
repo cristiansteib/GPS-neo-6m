@@ -7,14 +7,19 @@
 	#define RX_PIN_DEFAULT 10
 	#define TX_PIN_DEFAULT 11
 	#define BAUDRATE_DEFAULT 9600
-	#define BUFFER_SIZE 600
-	#define BUFFER_1 0
-	#define BUFFER_2 500
+
+	#define BUFFER_SERIAL_SIZE 500
+	#define BUFFER_PARSER_SIZE 100
+
 	//#define DEBUG
 
 	class Gpsneo : public SoftwareSerial
 	{
+		long unsigned int _timeout; //used for restrict the time.
+
 		bool checksum(char *sentence);
+		bool readSerial(char *buffer);
+		char *getDataRaw(const __FlashStringHelper * look,char * bufferParser);
 	public:
 		Gpsneo(void);
 		Gpsneo(uint8_t rx,uint8_t tx);
