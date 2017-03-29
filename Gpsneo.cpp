@@ -42,8 +42,7 @@ char * split(char *destination,char *string,const char *separator,uint8_t positi
 		previous=last;
 		last=indexOf(string,separator,previous+1);	
 	}
-	if (previous==-1)
-		return NULL; //exceed the limit
+
 	if (last==-1)
 		last=strlen(string);//the last item in the list. 
 
