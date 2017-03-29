@@ -1,6 +1,6 @@
 #include <SoftwareSerial.h>
 #include <Gpsneo.h>
-Gpsneo gps;
+Gpsneo gps();
 //Gpsneo gps(10,11);
 
 char latitud[11];
