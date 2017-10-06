@@ -19,8 +19,7 @@ void loop()
     gps.getDataGPRMC(latitud,
                     latitudHemisphere,
                     longitud,
-                    longitudMeridiano,
-                    );
+                    longitudMeridiano);
 
    Serial.println(latitud);
    Serial.println(latitudHemisphere);
